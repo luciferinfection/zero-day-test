@@ -1,0 +1,27 @@
+name: Test Zero-Day Bypass
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  test-bypass:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run update-comment-link with fake context
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CLAUDE_COMMENT_ID: 123
+          GITHUB_ACTION: fake
+        run: bun run src/entrypoints/update-comment-link.ts
